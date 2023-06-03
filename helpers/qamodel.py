@@ -11,7 +11,8 @@ class QuestionAnsweringModel(nn.Module):
         self.question_encoder = QuestionEncoder()
         self.decoder = AnswerDecoder(hidden_dim * 2, output_dim)  # Multiply by 2 because we concatenate paragraph and question
 
-    def forward(self, paragraph, question):
+    # Allow answers to be given here
+    def forward(self, paragraph, question, answers=None):
         # Encode the paragraph and question
         encoded_paragraph = self.paragraph_encoder(paragraph)
         encoded_question = self.question_encoder(question)

@@ -1,6 +1,6 @@
 import torch
 from torch import optim, nn
-from helpers.vocab import load_data, build_vocab, encode_text, compute_vocab_size
+from helpers.vocab import load_data, build_vocab, encode_text, compute_vocab_size, calculate_max_length
 from helpers.loader import create_dataloader
 from helpers.qamodel import QuestionAnsweringModel
 
@@ -11,13 +11,18 @@ paragraphs = load_data('paragraphs.txt')
 questions = load_data('questions.txt')
 answers = load_data('answers.txt')
 
+# Calculate maximum lengths
+max_question_length = calculate_max_length(questions)
+max_answer_length = calculate_max_length(answers)
+max_paragraph_length = calculate_max_length(paragraphs)
+
 paragraph_vocab = build_vocab(paragraphs)
 question_vocab = build_vocab(questions)
 answer_vocab = build_vocab(answers)
 
-encoded_paragraphs = encode_text(paragraphs, paragraph_vocab)
-encoded_questions = encode_text(questions, question_vocab)
-encoded_answers = encode_text(answers, answer_vocab)
+encoded_paragraphs = encode_text(paragraphs, paragraph_vocab, max_paragraph_length)
+encoded_questions = encode_text(questions, question_vocab, max_question_length)
+encoded_answers = encode_text(answers, answer_vocab, max_answer_length)
 
 vocab_size = compute_vocab_size(questions, answers, paragraphs)
 
@@ -39,6 +44,7 @@ optimizer = optim.Adam(model.parameters(), lr=0.001)
 batch_size = 32
 data_loader = create_dataloader(encoded_paragraphs, encoded_questions, encoded_answers, batch_size)
 
+# Start small!
 num_epochs = 2
 
 # Training loop
@@ -51,7 +57,7 @@ for epoch in range(num_epochs):
         paragraphs, questions, answers = batch
 
         # Forward pass
-        answer_logits = model(paragraphs, questions)
+        answer_logits = model(paragraphs, questions, answers)
 
         # Compute loss
         loss = loss_function(answer_logits, answers)

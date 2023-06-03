@@ -39,7 +39,7 @@ class ParagraphEncoder(nn.Module):
         # Load the pre-trained BERT model
         self.bert_model = BertModel.from_pretrained('bert-base-uncased')
 
-    def forward(self, paragraph, answers):
+    def forward(self, paragraph, answers=None):
         # Encode the paragraph using the BERT model
         paragraph_reps = self.bert_model(paragraph).last_hidden_state
 
