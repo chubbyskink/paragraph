@@ -22,20 +22,21 @@ def process_json_data(json_data):
 
     for i in range(STORIES):
         # Extracting data from JSON
-        story = data[i]['story']
+        story = data[i]['story'].replace("\n", "").strip()
         questions = data[i]['questions']
         answers = data[i]['answers']
 
-        stories += story + "\n"
         # Writing the questions to a file
         questionsRes += ''.join([f"{q['input_text']}\n" for i, q in enumerate(questions)])
 
         # Writing the answers to a file
         answersRes += ''.join([f"{a['input_text']}\n" for i, a in enumerate(answers)])
 
+        stories += story + ''.join("\n" for i in enumerate(questions))
+
     write_to_file(PATH+'questions.txt', questionsRes)
     write_to_file(PATH+'answers.txt', answersRes)
-    write_to_file(PATH+'story.txt', stories)
+    write_to_file(PATH+'paragraphs.txt', stories)
     
 
 if __name__ == '__main__':
